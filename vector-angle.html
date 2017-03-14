@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+	
+		<title>angle</title>
+		<script type="text/javascript" src="geometri.js"></script>
+		
+	</head>
+	
+	<body>
+
+		<script type="text/javascript">
+			
+			/************************************
+			*		      CANVAS CLASS			*
+			/************************************/
+
+				function Canvas()
+				{
+					var _this 	= this;
+					var dom		= document.createElement('canvas');
+					var ctx 	= dom.getContext('2d');
+
+					this.open = function(w, h)
+					{
+						width 				= w;
+						height 				= h;
+
+						var ratio 			= _getRatio();
+
+						dom.width 			= width * (ratio);
+						dom.height 			= height * (ratio);
+						dom.style.width 	= width + 'px';
+						dom.style.height 	= height + 'px';
+
+						ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+					}
+
+					var _getRatio = function()
+					{
+						var dpr = 	window.devicePixelRatio 			|| 1;
+						var bsr = 	ctx.webkitBackingStorePixelRatio 	||
+									ctx.mozBackingStorePixelRatio 		||
+									ctx.msBackingStorePixelRatio 		||
+									ctx.oBackingStorePixelRatio 		||
+									ctx.backingStorePixelRatio 			|| 1;
+
+						return dpr / bsr;
+					};
+
+					this.clearRect = function(x, y, w, h)
+					{
+						ctx.clearRect(x, y, w, h);
+					};
+
+					this.clear = function()
+					{
+						this.clearRect(0, 0, width, height);
+					}
+
+					this.getContext = function()
+					{
+						return ctx;
+					};
+
+					this.getWidth = function()
+					{
+						return width;
+					};
+
+					this.getHeight = function()
+					{
+						return height;
+					};
+
+					this.getDom = function()
+					{
+						return dom;
+					};
+
+					this.draw = function(drawable)
+					{
+						drawable.draw(ctx);
+					}
+				}
+
+
+			/************************************
+			 *			DRAWING CLASS 			*
+			/************************************/
+
+			 	function Drawing()
+			 	{
+			 		var _this = this;
+			 		var _canvas = new Canvas();
+			 		var dom 	= document.createElement('div');
+
+			 		_canvas.open(600, 300);
+			
+					dom.onmousemove = function(e)
+					{
+						var c = new Vector(300,100);
+						var v = new Vector(300,150);
+
+						var v2 = new Vector(e.offsetX, e.offsetY);
+
+						var l = new Line(c,v);
+						var l2 = new Line(c,v2);
+
+						_canvas.clear();
+						_canvas.draw(l);
+						_canvas.draw(l2);
+
+						var dv  = c.sub(v);
+						var dv2 = c.sub(v2);
+
+						console.log(dv.angleBetween360(dv2));
+					}
+
+					document.body.appendChild(dom);
+					dom.appendChild(_canvas.getDom());
+				}
+
+				var d = new Drawing();
+
+		
+
+		</script>
+	
+	</body>
+
+</html>

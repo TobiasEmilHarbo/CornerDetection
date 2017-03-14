@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+	
+	<html>
+	
+	<head>
+
+		<title>Corner detection</title>
+		<script type="text/javascript" src="geometri.js"></script>
+
+		<style type="text/css">
+			
+			canvas{
+				border: solid 1px gray;
+			}
+
+		</style>
+
+	</head>
+	
+	<body>
+
+		<script type="text/javascript">
+			
+		/************************************
+		*		      CANVAS CLASS			*
+		/************************************/
+
+			function Canvas()
+			{
+				var _this 	= this;
+				var dom		= document.createElement('canvas');
+				var ctx 	= dom.getContext('2d');
+
+				this.open = function(w, h)
+				{
+					width 				= w;
+					height 				= h;
+
+					var ratio 			= _getRatio();
+
+					dom.width 			= width * (ratio);
+					dom.height 			= height * (ratio);
+					dom.style.width 	= width + 'px';
+					dom.style.height 	= height + 'px';
+
+					ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+				}
+
+				var _getRatio = function()
+				{
+					var dpr = 	window.devicePixelRatio 			|| 1;
+					var bsr = 	ctx.webkitBackingStorePixelRatio 	||
+								ctx.mozBackingStorePixelRatio 		||
+								ctx.msBackingStorePixelRatio 		||
+								ctx.oBackingStorePixelRatio 		||
+								ctx.backingStorePixelRatio 			|| 1;
+
+					return dpr / bsr;
+				};
+
+				this.clearRect = function(x, y, w, h)
+				{
+					ctx.clearRect(x, y, w, h);
+				};
+
+				this.clear = function()
+				{
+					this.clearRect(0, 0, width, height);
+				}
+
+				this.getContext = function()
+				{
+					return ctx;
+				};
+
+				this.getWidth = function()
+				{
+					return width;
+				};
+
+				this.getHeight = function()
+				{
+					return height;
+				};
+
+				this.getDom = function()
+				{
+					return dom;
+				};
+
+				this.draw = function(drawable)
+				{
+					drawable.draw(ctx);
+				}
+			}
+
+
+		/************************************
+		 *			DRAWING CLASS 			*
+		/************************************/
+
+		 	function Drawing()
+		 	{
+		 		var _this = this;
+		 		var _canvas = new Canvas();
+		 		var dom 	= document.createElement('div');
+
+		 		var _mouseDown = false;
+
+		 		var _line = [];
+
+		 		_canvas.open(600, 300);
+
+		 		var _points = [];
+
+		 		for (var i = 0; i < _points.length; i++)
+		 		{
+		 			var v = new Vector(_points[i].x, _points[i].y);
+		 			_line.push(v);
+		 		}
+
+		 		setInterval(function()
+		 			{
+		 				_canvas.clear();
+		 				for (var i = 0; i < _line.length; i++)
+		 				{
+		 					_canvas.draw(_line[i]);
+		 				}
+		 			}, 1000/24);
+
+		 		this.printPoints = function()
+		 		{
+		 			console.log(_points);
+		 		}
+
+				dom.addEventListener('mousedown', function(e)
+				{
+
+					_mouseDown = true;
+				});
+
+				dom.addEventListener('mouseup', function(e)
+				{
+					var v = new Vector(e.offsetX, e.offsetY);
+					_line.push(v);
+
+					_mouseDown = false;
+				});
+			
+				dom.onmousemove = function(e)
+				{
+					if(_mouseDown)
+					{
+						var v = new Vector(e.offsetX, e.offsetY);
+						_line.push(v);
+						console.log('{x: '+e.offsetX+', y: '+e.offsetY+'}');
+					}
+				}
+
+				dom.onmouseleave = function(e)
+				{
+					_mouseDown = false;
+				}
+
+				document.body.appendChild(dom);
+				dom.appendChild(_canvas.getDom());
+
+			}
+
+			var d = new Drawing();
+
+			window.addEventListener('keydown', function(e)
+			{
+				switch(e.code)
+				{
+					case('Space'):
+						d.printPoints();
+					break;
+				}
+			});
+
+
+
+
+		</script>
+	
+	</body>
+
+</html>
